@@ -1,0 +1,14 @@
+ru:
+  api:
+    errors:
+      missing_params: В запросе отсутствуют необходимые параметры
+  ad:
+    errors:
+      title:
+        blank: Укажите название
+      description:
+        blank: Укажите описание
+      city:
+        blank: Укажите город
+      user_id:
+        blank: Укажите пользователя

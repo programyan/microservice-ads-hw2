@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+
+require 'irb'
+require_relative '../config/environment'
+
+DB = Sequel.connect(ENV.fetch('DATABASE_URL'))
+Dir['app/**/*.rb'].each do |m|
+  require_relative "../#{m}"
+end
+
+IRB.start
