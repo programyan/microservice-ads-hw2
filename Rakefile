@@ -1,20 +1,7 @@
-require 'bundler/setup'
-require 'rake'
-Bundler.setup
-
-Bundler.require(:default, ENV.fetch('APP_ENV', 'development'))
-
-Dotenv.load('.env', ".env.#{ENV.fetch('APP_ENV', 'development')}")
-
-require 'grape-route-helpers'
-require 'grape-route-helpers/tasks'
-
-task :environment do
-  require File.expand_path('app/api', File.dirname(__FILE__))
-end
+require_relative 'config/loader'
+Loader.init!
 
 namespace :db do
-  require 'sequel/core'
   Sequel.extension :migration
 
   desc 'Create Database'
@@ -30,7 +17,7 @@ namespace :db do
   desc 'Run migrations'
   task :migrate, [:version] do |t, args|
     version = args[:version].to_i if args[:version]
-    Sequel.connect(ENV.fetch("DATABASE_URL")) do |db|
+    Loader.connect_to_db! do |db|
       Sequel::Migrator.run(db, "db/migrations", target: version)
     end
   end
@@ -44,19 +31,9 @@ namespace :db do
 
   desc 'Seeds'
   task :seed do
-    Sequel.connect(ENV.fetch("DATABASE_URL")) do |db|
-      require_relative 'config/initializers/sequel'
-      require_relative 'app/models/ad'
+    Loader.load_all!
 
-      (1..10).each do |index|
-        Ad.create(
-          user_id: rand(3),
-          title: "Title #{index}",
-          description: "Lorem ipusm dolor sit amet #{index}",
-          city: ['Хабаровск', 'Санкт-Петербург'].sample
-        )
-      end
-    end
+    require_relative 'db/seeds'
   end
 end
 

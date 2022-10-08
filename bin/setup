@@ -27,7 +27,7 @@ FileUtils.chdir APP_ROOT do
   system! 'bundle exec rake db:create'
   system! 'bundle exec rake db:migrate'
 
-  if ENV.fetch('APP_ENV', 'development') == 'development'
+  if ENV.fetch('RACK_ENV', 'development') == 'development'
     puts "\n== Seeding =="
     system! 'bundle exec rake db:seed'
   end

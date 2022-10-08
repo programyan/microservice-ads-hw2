@@ -1,11 +1,8 @@
 #!/usr/bin/env ruby
 
 require 'irb'
-require_relative '../config/environment'
+require_relative '../config/loader'
 
-DB = Sequel.connect(ENV.fetch('DATABASE_URL'))
-Dir['app/**/*.rb'].each do |m|
-  require_relative "../#{m}"
-end
+Loader.load_all!
 
 IRB.start

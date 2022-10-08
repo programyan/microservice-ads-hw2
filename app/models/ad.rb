@@ -1,7 +1,3 @@
-# frozen_string_literal: true
-
-require 'sequel'
-
 class Ad < Sequel::Model
   plugin :validation_helpers
   self.raise_on_save_failure = false

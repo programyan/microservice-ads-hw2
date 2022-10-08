@@ -1,7 +1,7 @@
 require 'bundler'
-require_relative './config/environment'
+require_relative './config/loader'
 
-require_relative './app/api'
+Loader.load_all!
 
 Api.compile!
 

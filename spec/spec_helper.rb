@@ -13,12 +13,14 @@
 # it.
 #
 # See https://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
-ENV['APP_ENV'] ||= 'test'
+ENV['RACK_ENV'] = 'test'
 
 require 'factory_bot'
 require 'rack/test'
 
-require_relative '../config/environment'
+require_relative '../config/loader'
+
+Loader.load_all!
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
@@ -52,7 +54,7 @@ RSpec.configure do |config|
   config.shared_context_metadata_behavior = :apply_to_host_groups
 
   config.around(:each) do |example|
-    DB.transaction(:rollback=>:always, :auto_savepoint=>true){example.run}
+    Sequel::Model.db.transaction(:rollback=>:always, :auto_savepoint=>true) { example.run }
   end
 
   config.include FactoryBot::Syntax::Methods

@@ -1,7 +1,7 @@
 require 'grape'
 require 'grape-route-helpers'
 require 'grape-swagger'
-require_relative '../config/environment'
+require_relative '../config/loader'
 
 class Api < Grape::API
   format :json
