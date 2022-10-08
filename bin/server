@@ -2,4 +2,4 @@
 
 require_relative '../config/loader'
 
-system('bundle exec rackup')
+system('bundle exec puma')

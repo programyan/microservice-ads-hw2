@@ -4,6 +4,8 @@ require 'grape-swagger'
 require_relative '../config/loader'
 
 class Api < Grape::API
+  helpers AuthHelper
+
   format :json
   content_type :json, 'application/json'
 
@@ -17,6 +19,10 @@ class Api < Grape::API
 
   rescue_from Grape::Exceptions::ValidationErrors do
     error!({ errors: [{ details: I18n.t(:missing_params, scope: 'api.errors') }] }, 422)
+  end
+
+  rescue_from AuthHelper::UnauthorizedError do
+    error!({ errors: [{ details: I18n.t(:unautorized, scope: 'api.errors') }] }, 403)
   end
 
   resource :ads do
@@ -44,11 +50,10 @@ class Api < Grape::API
         requires :title, type: String
         requires :description, type: String
         requires :city, type: String
-        requires :user_id, type: Integer
       end
     end
     post do
-      result = Ads::Create.call(**declared(params)[:ad].symbolize_keys)
+      result = Ads::Create.call(user_id: user_id, **declared(params)[:ad].symbolize_keys)
 
       if result.success?
         AdSerializer.new(result.ad).serializable_hash

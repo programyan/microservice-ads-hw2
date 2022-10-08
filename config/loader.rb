@@ -13,6 +13,8 @@ module Loader
     init!
     connect_to_db!
     load_file('../app/services/base_service')
+    load_file('../app/lib/base_http_client')
+    load_dir('app/helpers/**/*.rb')
     load_dir('app/**/*.rb')
   end
 
