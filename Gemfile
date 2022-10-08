@@ -14,6 +14,10 @@ gem 'rake'
 gem 'pg'
 gem 'sequel'
 
+# external api
+gem 'faraday'
+gem 'faraday_middleware'
+
 # dry-rb
 gem 'dry-initializer'
 

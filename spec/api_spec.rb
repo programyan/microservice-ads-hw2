@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
-
 describe Api, :aggregate_failures do
   include Rack::Test::Methods
 
@@ -26,15 +24,12 @@ describe Api, :aggregate_failures do
   end
 
   describe 'POST /ads' do
-    before { post '/ads', params.to_json, 'CONTENT_TYPE' => 'application/json' }
-
     let(:params) do
       {
         ad: {
           title: title,
           description: description,
           city: city,
-          user_id: user_id
         }
       }
     end
@@ -43,6 +38,15 @@ describe Api, :aggregate_failures do
     let(:description) { 'Ad description' }
     let(:city) { 'Khabarovsk' }
     let(:user_id) { rand(1..10) }
+    let(:auth_service) { instance_double('AuthService::Client', auth: user_id) }
+    let(:geocode_service) { instance_double('GeocodeService::Client', geocode: geocode_result) }
+    let(:geocode_result) { { 'lat' => rand(100), 'lon' => rand(100) } }
+
+    before do
+      allow(AuthService::Client).to receive(:new).and_return(auth_service)
+      allow(GeocodeService::Client).to receive(:new).and_return(geocode_service)
+      post '/ads', params.to_json, 'CONTENT_TYPE' => 'application/json'
+    end
 
     it { expect(last_response.status).to eq 201 }
 

@@ -2,6 +2,7 @@ ru:
   api:
     errors:
       missing_params: В запросе отсутствуют необходимые параметры
+      forbidden: Доступ запрещен
   ad:
     errors:
       title:
