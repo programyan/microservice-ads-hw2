@@ -38,12 +38,12 @@ describe Api, :aggregate_failures do
     let(:description) { 'Ad description' }
     let(:city) { 'Khabarovsk' }
     let(:user_id) { rand(1..10) }
-    let(:auth_service) { instance_double('AuthService::Client', auth: user_id) }
+    let(:auth_service) { instance_double('AuthService::Client', auth: nil, user_id: user_id) }
     let(:geocode_service) { instance_double('GeocodeService::Client', geocode: geocode_result) }
     let(:geocode_result) { { 'lat' => rand(100), 'lon' => rand(100) } }
 
     before do
-      allow(AuthService::Client).to receive(:new).and_return(auth_service)
+      allow(AuthService::Client).to receive(:fetch).and_return(auth_service)
       allow(GeocodeService::Client).to receive(:new).and_return(geocode_service)
       post '/ads', params.to_json, 'CONTENT_TYPE' => 'application/json'
     end
@@ -60,6 +60,37 @@ describe Api, :aggregate_failures do
           a_hash_including('detail' => I18n.t!('ad.errors.description.blank')),
           a_hash_including('detail' => I18n.t!('ad.errors.title.blank'))
         )
+      end
+    end
+  end
+
+  describe 'PATCH /ads/:id' do
+    let(:params) do
+      {
+        lon: longitude,
+        lat: latitude
+      }
+    end
+
+    let(:id) { ad.id }
+    let(:latitude) { rand(100..10000) / 100.0 }
+    let(:longitude) { rand(100..10000) / 100.0 }
+    let(:ad) { create(:ad) }
+
+    before do
+      patch "/ads/#{id}", params.to_json, 'CONTENT_TYPE' => 'application/json'
+    end
+
+    it { expect(last_response.status).to eq 204 }
+
+    context 'when ad is not found' do
+      let(:id) { 0 }
+
+      it 'return errors' do
+        expect(last_response.status).to eq 422
+        expect(JSON.parse(last_response.body)['errors']).to contain_exactly(
+                                                              a_hash_including('detail' => I18n.t!('ad.errors.base.not_found')),
+                                                            )
       end
     end
   end

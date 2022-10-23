@@ -5,6 +5,8 @@ ru:
       forbidden: Доступ запрещен
   ad:
     errors:
+      base:
+        not_found: Объявление не найдено
       title:
         blank: Укажите название
       description:

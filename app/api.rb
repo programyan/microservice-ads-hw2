@@ -22,7 +22,7 @@ class Api < Grape::API
   end
 
   rescue_from AuthHelper::UnauthorizedError do
-    error!({ errors: [{ details: I18n.t(:unautorized, scope: 'api.errors') }] }, 403)
+    error!({ errors: [{ details: I18n.t(:forbidden, scope: 'api.errors') }] }, 403)
   end
 
   resource :ads do
@@ -59,6 +59,26 @@ class Api < Grape::API
         AdSerializer.new(result.ad).serializable_hash
       else
         error! ErrorSerializer.from_model(result.ad), 422
+      end
+    end
+
+    desc 'Обновление координат у рекламного объявления' do
+      summary 'Эндпоинт для установки координат объявления после геокодирования'
+      produces ['application/json']
+      consumes ['application/json']
+    end
+    params do
+      requires :id, type: Integer
+      requires :lat, type: Float
+      requires :lon, type: Float
+    end
+    patch '/:id' do
+      result = Ads::UpdateCoordinates.call(**declared(params).symbolize_keys)
+
+      if result.success?
+        status 204
+      else
+        error! ErrorSerializer.from_messages(result.errors), 422
       end
     end
   end

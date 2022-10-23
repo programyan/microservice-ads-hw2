@@ -1,10 +1,25 @@
 require_relative 'api'
 
 module GeocodeService
-  class Client < BaseHttpClient
+  class Client
+    extend Dry::Initializer[undefined: false]
+
     include Api
 
-    option :url, default: proc { ENV.fetch('GEOCODE_BASE_URL') }
-    option :connection, default: proc { build_connection }
+    option :queue, default: proc { create_queue }
+
+    private
+
+    def create_queue
+      channel = RabbitMq.channel
+      channel.queue('geocoding', durable: true)
+    end
+
+    def publish(payload, opts = {})
+      @queue.publish(
+        payload,
+        opts.merge(app_id: 'ads')
+      )
+    end
   end
 end

@@ -17,9 +17,7 @@ module Ads
 
       return fail!(@ad.errors) unless @ad.save
 
-      geocode_result = geocode_service.geocode(@ad.city)
-
-      @ad.update(geocode_result) if geocode_result
+      geocode_service.geocode(@ad.id, @ad.city)
     end
   end
 end

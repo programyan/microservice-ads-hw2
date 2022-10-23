@@ -4,11 +4,13 @@ module AuthHelper
   AUTH_TOKEN = %r{\ABearer (?<token>.+)\z}
 
   def user_id
-    auth_service.auth(matched_token).presence || raise(UnauthorizedError)
+    auth_service.auth(matched_token)
+
+    auth_service.user_id.presence || raise(UnauthorizedError)
   end
 
   def auth_service
-    @auth_service ||= AuthService::Client.new
+    AuthService::Client.fetch
   end
 
   def matched_token
