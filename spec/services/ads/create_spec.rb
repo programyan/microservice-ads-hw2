@@ -16,10 +16,7 @@ describe Ads::Create, :aggregate_failures do
   let(:description) { 'Ad description' }
   let(:city) { 'Khabarovsk' }
   let(:user_id) { rand(1..10) }
-  let(:geocode_service) { instance_double('GeocodeService::Client', geocode: geocode_result) }
-  let(:geocode_result) { { 'lat' => lat, 'lon' => lon } }
-  let(:lat) { rand(100) }
-  let(:lon) { rand(100) }
+  let(:geocode_service) { instance_double('GeocodeService::Client', geocode: nil) }
 
   before { allow(GeocodeService::Client).to receive(:new).and_return(geocode_service) }
 
@@ -28,8 +25,8 @@ describe Ads::Create, :aggregate_failures do
     expect(result.ad).to be_kind_of(Ad)
 
     #check attributes
-    expect(result.ad.lat).to eq lat
-    expect(result.ad.lon).to eq lon
+    expect(result.ad.lat).to eq nil
+    expect(result.ad.lon).to eq nil
   end
 
   context 'invalid parameters' do

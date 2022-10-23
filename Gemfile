@@ -15,6 +15,7 @@ gem 'pg'
 gem 'sequel'
 
 # external api
+gem 'bunny'
 gem 'faraday'
 gem 'faraday_middleware'
 

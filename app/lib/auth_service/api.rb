@@ -1,11 +1,7 @@
 module AuthService
   module Api
     def auth(token)
-      response = connection.post('/') do |request|
-        request.headers['Authorization'] = "Bearer #{token}"
-      end
-
-      response.body.dig('meta', 'user_id') if response.success?
+      publish({ token: token }.to_json, type: 'auth')
     end
   end
 end
